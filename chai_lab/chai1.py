@@ -98,6 +98,7 @@ from chai_lab.utils.plot import plot_msa
 from chai_lab.utils.tensor_utils import move_data_to_device, set_seed, und_self
 from chai_lab.utils.typing import Float, typecheck
 
+from chai_lab.data.dataset.templates.fns.protein import *
 
 class UnsupportedInputError(RuntimeError):
     pass
@@ -305,6 +306,7 @@ def make_all_atom_feature_context(
     msa_server_url: str = "https://api.colabfold.com",
     msa_directory: Path | None = None,
     constraint_path: Path | None = None,
+    template_pdbs: Path | None = None,
     esm_device: torch.device = torch.device("cpu"),
 ):
     assert not (
@@ -366,12 +368,17 @@ def make_all_atom_feature_context(
         msa_context.num_tokens == merged_context.num_tokens
     ), f"Discrepant tokens in input and MSA: {merged_context.num_tokens} != {msa_context.num_tokens}"
 
-    # Load templates
-    template_context = TemplateContext.empty(
-        n_tokens=n_actual_tokens,
-        n_templates=MAX_NUM_TEMPLATES,
-    )
-
+    if template_pdbs is None:
+        # Load templates
+        template_context = TemplateContext.empty(
+            n_tokens=n_actual_tokens,
+            n_templates=MAX_NUM_TEMPLATES,
+            )
+    else:
+        ### implement function to calculate backbone heavy atoms from template pdb
+        ### Feed backbone atoms to openfold code to calculate unit vector + distances
+        ### Feed unit vector + distances to template context to build context for  
+        pass
     # Load ESM embeddings
     if use_esm_embeddings:
         embedding_context = get_esm_embedding_context(chains, device=esm_device)
