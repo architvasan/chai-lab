@@ -20,7 +20,7 @@ from typing import Any, Sequence, Mapping, Optional
 import re
 import string
 
-from openfold.np import residue_constants
+from chai_lab.data.dataset.templates.fns import residue_constants
 from Bio.PDB import PDBParser
 import numpy as np
 import modelcif

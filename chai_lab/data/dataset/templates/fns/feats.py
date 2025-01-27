@@ -20,11 +20,11 @@ import torch
 import torch.nn as nn
 from typing import Dict, Union
 
-from openfold.np import protein
-import openfold.np.residue_constants as rc
-from openfold.utils.geometry import rigid_matrix_vector, rotation_matrix, vector
-from openfold.utils.rigid_utils import Rotation, Rigid
-from openfold.utils.tensor_utils import (
+from chai_lab.data.dataset.templates.fns import protein
+import chai_lab.data.dataset.templates.fns.residue_constants as rc
+from chai_lab.data.dataset.templates.fns import rigid_matrix_vector, rotation_matrix, vector
+from chai_lab.data.dataset.templates.fns.rigid_utils import Rotation, Rigid
+from chai_lab.data.dataset.templates.fns.tensor_utils import (
     batched_gather,
     one_hot,
     tree_map,

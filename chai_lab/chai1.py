@@ -98,7 +98,8 @@ from chai_lab.utils.plot import plot_msa
 from chai_lab.utils.tensor_utils import move_data_to_device, set_seed, und_self
 from chai_lab.utils.typing import Float, typecheck
 
-from chai_lab.data.dataset.templates.fns.protein import *
+import chai_lab.data.dataset.templates.fns.protein as protein
+import chai_lab.data.dataset.templates.fns.feats as feats
 
 class UnsupportedInputError(RuntimeError):
     pass
@@ -375,6 +376,14 @@ def make_all_atom_feature_context(
             n_templates=MAX_NUM_TEMPLATES,
             )
     else:
+        protein_data = protein.from_pdb_string(template_pdbs)
+        pseudo_beta, pseudo_beta_mask = feats.pseudo_beta_fn(
+                                            protein_data.aatype,
+                                            protein_data.atom_positions,
+                                            protein.atom_mask,
+                                            )
+        print(pseudo_beta)
+        print(pseudo_beta_mask)
         ### implement function to calculate backbone heavy atoms from template pdb
         ### Feed backbone atoms to openfold code to calculate unit vector + distances
         ### Feed unit vector + distances to template context to build context for  
