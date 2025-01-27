@@ -2,7 +2,7 @@ import chai_lab.chai1 as chai1
 from pathlib import Path
 import torch
 def test(
-        template_pdbs: Path,
+        template_pdbs: str,
         fasta_file: Path,
         output_dir: Path,
         use_esm_embeddings: bool = True,
@@ -24,3 +24,9 @@ def test(
                 esm_device,
             ) 
     return
+
+test(
+    str('/lus/eagle/projects/datascience/avasan/Software/chai1_archit/chai-lab/input_tests/6yz1_A.pdb'),
+    Path('input_tests/nsp10_nsp16.fasta'),
+    Path('output_tests/')
+    )

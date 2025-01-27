@@ -160,3 +160,29 @@ cython_debug/
 # outputs from the model
 outputs/
 
+chai_archit_env/lib64
+chai_archit_env/pyvenv.cfg
+chai_archit_env/bin/activate
+chai_archit_env/bin/activate.csh
+chai_archit_env/bin/activate.fish
+chai_archit_env/bin/Activate.ps1
+chai_archit_env/bin/chai
+chai_archit_env/bin/dmypy
+chai_archit_env/bin/google-oauthlib-tool
+chai_archit_env/bin/huggingface-cli
+chai_archit_env/bin/identify-cli
+chai_archit_env/bin/mypy
+chai_archit_env/bin/mypyc
+chai_archit_env/bin/pip
+chai_archit_env/bin/pip3
+chai_archit_env/bin/pip3.11
+chai_archit_env/bin/pre-commit
+chai_archit_env/bin/python
+chai_archit_env/bin/python3
+chai_archit_env/bin/python3.11
+chai_archit_env/bin/ruff
+chai_archit_env/bin/stubgen
+chai_archit_env/bin/stubtest
+chai_archit_env/bin/tqdm
+chai_archit_env/bin/transformers-cli
+chai_archit_env/bin/typer

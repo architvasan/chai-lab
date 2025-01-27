@@ -7,7 +7,7 @@ import math
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-
+import os
 import numpy as np
 import torch
 import torch.export
@@ -100,6 +100,9 @@ from chai_lab.utils.typing import Float, typecheck
 
 import chai_lab.data.dataset.templates.fns.protein as protein
 import chai_lab.data.dataset.templates.fns.feats as feats
+import chai_lab.data.dataset.templates.fns.rigid_utils as rigid_utils
+import chai_lab.data.dataset.templates.fns.residue_constants as rc
+import chai_lab.data.dataset.templates.fns.atom37_backbone as atom37_backbone
 
 class UnsupportedInputError(RuntimeError):
     pass
@@ -300,14 +303,13 @@ class StructureCandidates:
 
 def make_all_atom_feature_context(
     fasta_file: Path,
-    *,
     output_dir: Path,
     use_esm_embeddings: bool = True,
     use_msa_server: bool = False,
     msa_server_url: str = "https://api.colabfold.com",
     msa_directory: Path | None = None,
     constraint_path: Path | None = None,
-    template_pdbs: Path | None = None,
+    template_pdbs: str | None = None,
     esm_device: torch.device = torch.device("cpu"),
 ):
     assert not (
@@ -376,18 +378,69 @@ def make_all_atom_feature_context(
             n_templates=MAX_NUM_TEMPLATES,
             )
     else:
-        protein_data = protein.from_pdb_string(template_pdbs)
+        if os.path.exists(template_pdbs):
+            print("templates exist")
+        with open(template_pdbs) as f:
+            pdb_str = f.read()
+ 
+        #template_context = TemplateContext.empty(
+        #    n_tokens=n_actual_tokens,
+        #    n_templates=1,
+        #    )
+
+        protein_data = protein.from_pdb_string(pdb_str, 'A')
         pseudo_beta, pseudo_beta_mask = feats.pseudo_beta_fn(
                                             protein_data.aatype,
                                             protein_data.atom_positions,
-                                            protein.atom_mask,
+                                            protein_data.atom_mask,
                                             )
-        print(pseudo_beta)
-        print(pseudo_beta_mask)
-        ### implement function to calculate backbone heavy atoms from template pdb
+        #print(pseudo_beta.size())
+        print(pseudo_beta_mask.size())
+        beta_diffs = pseudo_beta.unsqueeze(1) - pseudo_beta.unsqueeze(0)
+        beta_dists = torch.norm(beta_diffs, dim = 2)
+        print(beta_dists.size())
+        ca_idx = rc.atom_order["CA"]
+        c_idx = rc.atom_order["C"]
+        n_idx = rc.atom_order["N"]
+        atom_positions_tensor = torch.tensor(protein_data.atom_positions)
+        ca_positions = atom_positions_tensor[..., ca_idx, :]
+        c_positions = atom_positions_tensor[..., c_idx, :]
+        n_positions = atom_positions_tensor[..., n_idx, :]
+        eps=1e-20
+        rigids = rigid_utils.Rigid.make_transform_from_reference(
+                                n_positions,
+                                ca_positions,
+                                c_positions
+                        ) 
+        template_vecs = rigids[..., None].invert_apply(rigids.get_trans())
+        template_unit_vecs = template_vecs/torch.norm(eps+template_vecs,dim=-1,keepdim=True)
+        
+        protein_data_dict = atom37_backbone.atom37_to_frames(protein_data)
+        protein_data_dict = atom37_backbone.get_backbone_frames(protein_data_dict)
+
+        temp_restypes = torch.tensor(protein_data.aatype).unsqueeze(0)
+        temp_pseudo_beta_mask = pseudo_beta_mask > 0
+        temp_pseudo_beta_mask = temp_pseudo_beta_mask.unsqueeze(0)
+        temp_atom_mask = torch.tensor(protein_data_dict["backbone_rigid_mask"])
+        temp_atom_mask = temp_atom_mask>0
+        temp_atom_mask = temp_atom_mask.unsqueeze(0)
+
+        temp_dists = beta_dists.unsqueeze(0)
+        temp_unit_vecs = template_unit_vecs.unsqueeze(0)
+        print(temp_restypes.size())
+        print(temp_pseudo_beta_mask.size())
+        print(temp_atom_mask.size())
+        print(temp_dists.size())
+        print(temp_unit_vecs.size())
+        template_context = TemplateContext(temp_restypes,
+                                           temp_pseudo_beta_mask,
+                                           temp_atom_mask,
+                                           temp_dists,
+                                           temp_unit_vecs
+                                           )
+        print(template_context.template_backbone_frame_mask)
         ### Feed backbone atoms to openfold code to calculate unit vector + distances
         ### Feed unit vector + distances to template context to build context for  
-        pass
     # Load ESM embeddings
     if use_esm_embeddings:
         embedding_context = get_esm_embedding_context(chains, device=esm_device)

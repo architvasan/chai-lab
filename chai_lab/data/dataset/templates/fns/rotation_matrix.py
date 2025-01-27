@@ -19,9 +19,9 @@ from typing import List
 
 import torch
 
-from openfold.utils.geometry import utils
-from openfold.utils.geometry import vector
-from openfold.utils.tensor_utils import tensor_tree_map
+from chai_lab.data.dataset.templates.fns import utils
+from chai_lab.data.dataset.templates.fns import vector
+from chai_lab.data.dataset.templates.fns.tensor_utils import tensor_tree_map
 
 
 COMPONENTS = ['xx', 'xy', 'xz', 'yx', 'yy', 'yz', 'zx', 'zy', 'zz']

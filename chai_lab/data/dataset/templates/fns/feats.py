@@ -34,8 +34,13 @@ from chai_lab.data.dataset.templates.fns.tensor_utils import (
 
 def pseudo_beta_fn(aatype, all_atom_positions, all_atom_masks):
     is_gly = aatype == rc.restype_order["G"]
+    is_gly = torch.tensor(is_gly)
+    all_atom_positions = torch.tensor(all_atom_positions)
+    all_atom_masks = torch.tensor(all_atom_masks)
+    #print(is_gly)
     ca_idx = rc.atom_order["CA"]
     cb_idx = rc.atom_order["CB"]
+    print(all_atom_masks)
     pseudo_beta = torch.where(
         is_gly[..., None].expand(*((-1,) * len(is_gly.shape)), 3),
         all_atom_positions[..., ca_idx, :],

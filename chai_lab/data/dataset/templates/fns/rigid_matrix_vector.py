@@ -19,8 +19,8 @@ from typing import Union, List
 
 import torch
 
-from openfold.utils.geometry import rotation_matrix
-from openfold.utils.geometry import vector
+from chai_lab.data.dataset.templates.fns import rotation_matrix
+from chai_lab.data.dataset.templates.fns import vector
 
 
 Float = Union[float, torch.Tensor]
