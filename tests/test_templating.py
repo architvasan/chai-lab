@@ -55,9 +55,9 @@ if __name__=="__main__":
     elif args.test == "complex":
 
         test(
-            str('input_tests/6yz1_A.pdb'),
-            Path('input_tests/nsp10_nsp16.fasta'),
-            Path('output_tests/templating_nsp10_nsp16')
+            str('input_tests/meta3.pdb'),
+            Path('input_tests/nmnat2_fbx.fasta'),
+            Path('output_tests/templating_nmnat2_fbx')
             )
 
 

@@ -216,3 +216,5 @@ output_tests/templating_nmnat2/scores.model_idx_1.npz
 output_tests/templating_nmnat2/scores.model_idx_2.npz
 output_tests/templating_nmnat2/scores.model_idx_3.npz
 output_tests/templating_nmnat2/scores.model_idx_4.npz
+chai_archit_env/bin/
+chai_archit_env/share/
