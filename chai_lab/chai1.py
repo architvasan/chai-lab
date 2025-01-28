@@ -371,7 +371,7 @@ def make_all_atom_feature_context(
         msa_context.num_tokens == merged_context.num_tokens
     ), f"Discrepant tokens in input and MSA: {merged_context.num_tokens} != {msa_context.num_tokens}"
 
-    if template_pdbs is None:
+    if template_pdbs=="None":
         # Load templates
         template_context = TemplateContext.empty(
             n_tokens=n_actual_tokens,
@@ -388,17 +388,14 @@ def make_all_atom_feature_context(
         #    n_templates=1,
         #    )
 
-        protein_data = protein.from_pdb_string(pdb_str, 'A')
+        protein_data = protein.from_pdb_string(pdb_str)
         pseudo_beta, pseudo_beta_mask = feats.pseudo_beta_fn(
                                             protein_data.aatype,
                                             protein_data.atom_positions,
                                             protein_data.atom_mask,
                                             )
-        #print(pseudo_beta.size())
-        print(pseudo_beta_mask.size())
         beta_diffs = pseudo_beta.unsqueeze(1) - pseudo_beta.unsqueeze(0)
         beta_dists = torch.norm(beta_diffs, dim = 2)
-        print(beta_dists.size())
         ca_idx = rc.atom_order["CA"]
         c_idx = rc.atom_order["C"]
         n_idx = rc.atom_order["N"]
@@ -415,7 +412,7 @@ def make_all_atom_feature_context(
         template_vecs = rigids[..., None].invert_apply(rigids.get_trans())
         template_unit_vecs = template_vecs/torch.norm(eps+template_vecs,dim=-1,keepdim=True)
         
-        protein_data_dict = atom37_backbone.atom37_to_frames(protein_data)
+        protein_data_dict = atom37_backbone.atom37_to_frames(protein_data, is_multimer=True)
         protein_data_dict = atom37_backbone.get_backbone_frames(protein_data_dict)
 
         temp_restypes = torch.tensor(protein_data.aatype).unsqueeze(0)
@@ -427,20 +424,12 @@ def make_all_atom_feature_context(
 
         temp_dists = beta_dists.unsqueeze(0)
         temp_unit_vecs = template_unit_vecs.unsqueeze(0)
-        print(temp_restypes.size())
-        print(temp_pseudo_beta_mask.size())
-        print(temp_atom_mask.size())
-        print(temp_dists.size())
-        print(temp_unit_vecs.size())
         template_context = TemplateContext(temp_restypes,
                                            temp_pseudo_beta_mask,
                                            temp_atom_mask,
                                            temp_dists,
                                            temp_unit_vecs
                                            )
-        print(template_context.template_backbone_frame_mask)
-        ### Feed backbone atoms to openfold code to calculate unit vector + distances
-        ### Feed unit vector + distances to template context to build context for  
     # Load ESM embeddings
     if use_esm_embeddings:
         embedding_context = get_esm_embedding_context(chains, device=esm_device)
@@ -487,6 +476,7 @@ def make_all_atom_feature_context(
     merged_context.drop_glycan_leaving_atoms_inplace()
 
     # Build final feature context
+    #print(template_context)
     feature_context = AllAtomFeatureContext(
         chains=chains,
         structure_context=merged_context,
@@ -496,6 +486,7 @@ def make_all_atom_feature_context(
         embedding_context=embedding_context,
         restraint_context=restraint_context,
     )
+    print(feature_context)
     return feature_context
 
 
@@ -554,7 +545,6 @@ def _bin_centers(min_bin: float, max_bin: float, no_bins: int) -> Tensor:
 @torch.no_grad()
 def run_folding_on_context(
     feature_context: AllAtomFeatureContext,
-    *,
     output_dir: Path,
     # expose some params for easy tweaking
     num_trunk_recycles: int = 3,
@@ -563,7 +553,7 @@ def run_folding_on_context(
     num_diffn_samples: int = 5,
     seed: int | None = None,
     device: torch.device | None = None,
-    low_memory: bool,
+    low_memory: bool=False,
 ) -> StructureCandidates:
     """
     Function for in-depth explorations.

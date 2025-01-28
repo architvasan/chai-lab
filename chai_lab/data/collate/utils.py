@@ -22,6 +22,7 @@ class PadSizes:
 def pad_size(max_in_batch: int, allowed_sizes: list[int]) -> int:
     """pads to the smallest allowed size"""
     max_allowed_size = allowed_sizes[-1]
+    print(max_in_batch)
     if max_in_batch > max_allowed_size:
         raise ValueError(f"{max_in_batch=} > {max_allowed_size=}")
     return min(n for n in allowed_sizes if n >= max_in_batch)
@@ -30,6 +31,7 @@ def pad_size(max_in_batch: int, allowed_sizes: list[int]) -> int:
 def get_pad_sizes(contexts: list[AllAtomStructureContext]) -> PadSizes:
     max_n_tokens = max(context.num_tokens for context in contexts)
     n_tokens = pad_size(max_n_tokens, AVAILABLE_MODEL_SIZES)
+    print(n_tokens)
 
     max_n_atoms = max(context.num_atoms for context in contexts)
     n_atoms = 23 * n_tokens

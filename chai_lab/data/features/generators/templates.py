@@ -47,7 +47,7 @@ class TemplateMaskGenerator(FeatureGenerator):
         self,
         template_backbone_frame_mask: Bool[Tensor, "batch templ tokens"],
         template_pseudo_beta_mask: Bool[Tensor, "batch templ tokens"],
-        asym_ids: Int[Tensor, "batch tokens"],
+        asym_ids: Int[Tensor, "batch templ tokens"],
     ) -> Tensor:
         same_asym = rearrange(asym_ids, "b t -> b 1 t 1 1") == rearrange(
             asym_ids, "b t -> b 1 1 t 1"
@@ -66,6 +66,7 @@ class TemplateMaskGenerator(FeatureGenerator):
 
         mask_feat = torch.cat([bij_backbone, bij_pseudo_beta], dim=-1).float()
 
+        print(same_asym.float().size())
         return self.make_feature(mask_feat.float() * same_asym.float())
 
 

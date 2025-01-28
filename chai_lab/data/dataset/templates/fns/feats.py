@@ -40,7 +40,7 @@ def pseudo_beta_fn(aatype, all_atom_positions, all_atom_masks):
     #print(is_gly)
     ca_idx = rc.atom_order["CA"]
     cb_idx = rc.atom_order["CB"]
-    print(all_atom_masks)
+    #print(all_atom_masks)
     pseudo_beta = torch.where(
         is_gly[..., None].expand(*((-1,) * len(is_gly.shape)), 3),
         all_atom_positions[..., ca_idx, :],

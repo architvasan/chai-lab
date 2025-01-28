@@ -176,6 +176,7 @@ class TemplateContext:
         n_pad_templates = max_templates - self.num_templates
 
         max_tokens = default(max_tokens, self.num_tokens)
+        #max_tokens = 512 #768
         assert (
             self.num_tokens <= max_tokens
         ), f"Cannot pad templates containing {self.num_tokens} tokens to {max_tokens} tokens"
