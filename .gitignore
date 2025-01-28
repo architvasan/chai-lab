@@ -206,3 +206,13 @@ output_tests/templating/scores.model_idx_1.npz
 output_tests/templating/scores.model_idx_2.npz
 output_tests/templating/scores.model_idx_3.npz
 output_tests/templating/scores.model_idx_4.npz
+output_tests/templating_nmnat2/pred.model_idx_0.cif
+output_tests/templating_nmnat2/pred.model_idx_1.cif
+output_tests/templating_nmnat2/pred.model_idx_2.cif
+output_tests/templating_nmnat2/pred.model_idx_3.cif
+output_tests/templating_nmnat2/pred.model_idx_4.cif
+output_tests/templating_nmnat2/scores.model_idx_0.npz
+output_tests/templating_nmnat2/scores.model_idx_1.npz
+output_tests/templating_nmnat2/scores.model_idx_2.npz
+output_tests/templating_nmnat2/scores.model_idx_3.npz
+output_tests/templating_nmnat2/scores.model_idx_4.npz

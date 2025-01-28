@@ -28,17 +28,39 @@ def test(
     print(f"emb cont: {dir(cont.embedding_context)}")
     print(f"struc cont: {cont.structure_context}")
     import sys
-    sys.exit()
+    #sys.exit()
     chai1.run_folding_on_context(cont,
                            output_dir
                             )
     return
 
-test(
-    str('/lus/eagle/projects/datascience/avasan/Software/chai1_archit/chai-lab/input_tests/6yz1.pdb'),
-    Path('input_tests/nsp10_nsp16.fasta'),
-    Path('output_tests/templating')
-    )
+if __name__=="__main__":
+    import argparse
+
+    # Create the argument parser
+    parser = argparse.ArgumentParser(description="Which test to run?")
+    
+    # Add arguments
+    parser.add_argument("-t", "--test", type=str, help="Test type: monomer, complex")
+    
+    # Parse arguments
+    args = parser.parse_args()
+
+    if args.test == "monomer":
+        test(
+            str('input_tests/meta3.pdb'),
+            Path('input_tests/nmnat2.fasta'),
+            Path('output_tests/templating_nmnat2')
+            )
+    elif args.test == "complex":
+
+        test(
+            str('input_tests/6yz1_A.pdb'),
+            Path('input_tests/nsp10_nsp16.fasta'),
+            Path('output_tests/templating_nsp10_nsp16')
+            )
+
+
 #test(
 #    "None",
 #    Path('input_tests/nsp10_nsp16.fasta'),
