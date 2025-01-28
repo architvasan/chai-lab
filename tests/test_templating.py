@@ -24,9 +24,11 @@ def test(
                 esm_device,
             ) 
     #print(dir(cont))
-    print(f"temp cont: {cont.template_context}")
-    print(f"emb cont: {dir(cont.embedding_context)}")
-    print(f"struc cont: {cont.structure_context}")
+    #print(f"temp cont: {cont.template_context}")
+    for att in dir(cont.embedding_context):
+        print(att)
+    #print(f"emb cont: {dir(cont.embedding_context)}")
+    #print(f"struc cont: {cont.structure_context}")
     import sys
     #sys.exit()
     chai1.run_folding_on_context(cont,
@@ -58,11 +60,28 @@ def test_subsample(
                 esm_device,
             ) 
     #print(dir(cont))
-    print(f"temp cont: {cont.template_context}")
-    print(f"emb cont: {dir(cont.embedding_context)}")
-    print(f"struc cont: {cont.structure_context}")
+    for attr, value in cont.embedding_context.__dict__.items():
+        print (attr, value)
+        print(value.size())
+    esm_embeds_trunc = cont.embedding_context.esm_embeddings[300:,]
+    setattr(cont.embedding_context, "esm_embeddings", esm_embeds_trunc)
+    print(cont.embedding_context.esm_embeddings.size())
+
+    for attr, value in cont.structure_context.__dict__.items():
+        print (attr)
+        print(value)
+        #print(value.size())
+
+
+
+    #for att in dir(cont.embedding_context):
+    #    print(att)
+    #    print(cont.embedding_context.att)
+    #print(f"temp cont: {cont.template_context}")
+    #print(f"emb cont: {dir(cont.embedding_context)}")
+    #print(f"struc cont: {cont.structure_context}")
     import sys
-    sys.exit()
+    #sys.exit()
     chai1.run_folding_on_context(cont,
                            output_dir
                             )
