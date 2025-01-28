@@ -102,9 +102,9 @@ if __name__=="__main__":
 
     if args.test == "monomer":
         test(
-            str('input_tests/meta3.pdb'),
-            Path('input_tests/nmnat2.fasta'),
-            Path('output_tests/templating_nmnat2')
+            str('input_tests/efgr_ep_A.pdb'),
+            Path('input_tests/efgr_epitope.fasta'),
+            Path('output_tests/templating_efgr_ep')
             )
     elif args.test == "complex":
 
